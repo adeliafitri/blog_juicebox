@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Jobs\SendWelcomeEmailJob;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,8 @@ class AuthController extends ResponseController
         $user = User::create($input);
         $success['token'] =  $user->createToken('MyApp')->plainTextToken;
         $success['name'] =  $user->name;
+
+        SendWelcomeEmailJob::dispatch($user);
 
         return $this->sendResponse($success, 'User register successfully.');
     }

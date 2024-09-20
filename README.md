@@ -64,3 +64,30 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Set UP and run the Queue Worker
+1. Configure Queue in Laravel
+Set up .env QUEUE_CONNECTION=database
+Run Command 
+php artisan queue:table
+php artisan migrate
+
+Start the queue worker (you can run this in another terminal):
+php artisan queue:work
+
+2. Create a Mail Class for the Welcome Email
+php artisan make:mail WelcomeEmail
+customize the WelcomeEmail
+Create the email view resources/views/emails/welcome.blade.php:
+Create the queued job for sending the welcome email: php artisan make:job SendWelcomeEmailJob
+In app/Jobs/SendWelcomeEmailJob.php, implement the job
+
+## Create an Artisan Command to Dispatch the Job Manually
+1. Create Artisan Command php artisan make:command SendWelcomeEmailCommand
+In app/Console/Commands/SendWelcomeEmailCommand.php, implement the command to dispatch the job manually
+2. Register the Command in routes/console.php
+Artisan::command('send:welcome-email', function () {
+    $this->call(SendWelcomeEmailCommand::class);
+});
+3. Test the Command
+php artisan email:send-welcome {user_id}
